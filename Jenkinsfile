@@ -15,7 +15,8 @@ pipeline {
 
         stage('Build & Test') {
             steps {
-                sh 'gradle clean build'
+                sh 'chmod +x gradlew'
+                sh './gradlew clean build'
             }
         }
 
@@ -25,10 +26,8 @@ pipeline {
                     sh """
                     $SONAR_HOME/bin/sonar-scanner \
                       -Dsonar.projectKey=gradle-demo \
-                      -Dsonar.projectName=gradle-demo \
                       -Dsonar.sources=src \
-                      -Dsonar.java.binaries=build/classes \
-                      -Dsonar.coverage.jacoco.xmlReportPaths=build/reports/jacoco/test/jacocoTestReport.xml
+                      -Dsonar.java.binaries=build/classes
                     """
                 }
             }
