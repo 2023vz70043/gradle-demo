@@ -1,0 +1,70 @@
+plugins {
+    id 'java'
+    id 'jacoco'
+}
+
+group = 'com.bits.mvn'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+dependencies {
+    // Logging
+    implementation 'org.apache.logging.log4j:log4j-api:2.23.1'
+    implementation 'org.apache.logging.log4j:log4j-core:2.23.1'
+
+    // JUnit 5
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+
+    // REQUIRED for Gradle 9+ (fixes your launcher error)
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.2'
+}
+
+test {
+    useJUnitPlatform()
+
+    finalizedBy jacocoTestReport
+}
+
+jacoco {
+    toolVersion = "0.8.12"   // latest → fixes Java 17 instrumentation issues
+}
+
+jacocoTestReport {
+    dependsOn test
+
+    reports {
+        html.required = true
+        xml.required = true
+        csv.required = false
+    }
+
+    // IMPORTANT: avoid JaCoCo trying to instrument JDK classes
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    '**/module-info.class'
+            ])
+        }))
+    }
+}
+
+jar {
+    archiveBaseName.set('gradle-demo')
+    archiveVersion.set('1.0')
+
+    manifest {
+        attributes(
+                'Main-Class': 'com.bits.mvn.App'
+        )
+    }
+}
+
