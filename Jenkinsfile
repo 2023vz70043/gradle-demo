@@ -1,5 +1,3 @@
-
-
 pipeline {
     agent any
 
@@ -24,15 +22,19 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-        withSonarQubeEnv('sonar') {
-            withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
-                sh """
-                $SONAR_HOME/bin/sonar-scanner \
-                  -Dsonar.projectKey=gradle-demo \
-                  -Dsonar.sources=src \
-                  -Dsonar.java.binaries=build/classes \
-                  -Dsonar.token=$SONAR_TOKEN
-                """    }
+                withSonarQubeEnv('sonar') {
+                    withCredentials([
+                        string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')
+                    ]) {
+                        sh """
+                            \$SONAR_HOME/bin/sonar-scanner \
+                              -Dsonar.projectKey=gradle-demo \
+                              -Dsonar.sources=src \
+                              -Dsonar.java.binaries=build/classes \
+                              -Dsonar.token=\$SONAR_TOKEN
+                        """
+                    }
+                }
             }
         }
 
@@ -41,6 +43,7 @@ pipeline {
                 archiveArtifacts artifacts: 'build/libs/*.jar', fingerprint: true
             }
         }
+
     }
 }
 
