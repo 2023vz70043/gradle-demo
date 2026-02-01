@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        gradle 'gradle'   // only if Gradle configured in Jenkins tools
-        jdk 'jdk17'
-    }
-
     stages {
 
         stage('Checkout') {
